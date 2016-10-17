@@ -1,0 +1,203 @@
+---
+title: "用 ramcharts Packages 試作 統計圖表視覺化"
+author: "許sir"
+
+---
+
+## 本篇參考 Use the Javascript features for your R charts
+- http://datastorm-open.github.io/introduction_ramcharts/
+
+```{}
+install.packages("devtools")
+library(devtools)
+
+install.packages("rAmCharts")
+devtools::install_github("datastorm-open/rAmCharts")
+```
+
+```{r}
+setwd("/media/hsusir/DATA/Rdata Practice/03Visualization/rAmcharts")
+library(datasets)
+library(rAmCharts)
+```
+
+### **[Barplot] **
+```{r}
+data(data_gbar)
+head(data_gbar)
+
+data(data_bar)
+amBarplot(x = "country", y = "visits", data = data_bar,
+          labelRotation = -45) 
+
+amBarplot(x = "country", y = "visits", data = data_bar, horiz = TRUE)#Horizontal bar
+amBarplot(x = "country", y = "visits", data = data_bar, show_values = TRUE, labelRotation = -90)#Display values
+
+amBarplot(x = "year", y = c("income", "expenses"), data = data_gbar)#Grouped columns
+
+```
+
+```{r}
+#Parse dates - default label: first day of each year
+pipeR::pipeline(
+  amBarplot(x = "year", y = c("income", "expenses"), data = data_gbar,
+            dataDateFormat = "YYYY", minPeriod = "YYYY"),
+  setChartCursor()
+)
+```
+
+```{r}
+#Parse dates - default label: first day of each month
+pipeR::pipeline(
+  amBarplot(x = "month", y = c("income", "expenses"), data = data_gbar,
+            dataDateFormat = "MM/YYYY", minPeriod = "MM"),
+  setChartCursor()
+)
+```
+
+```{r}
+#Change groups colors
+amBarplot(x = "year", y = c("income", "expenses"), data = data_gbar, 
+      groups_color = c("#87cefa", "#c7158"))
+```
+
+```{r}
+
+amBarplot(x = "year", y = c("income", "expenses"), data = data_gbar, stack_type = "regular")#Stacked bars
+amBarplot(x = "year", y = c("income", "expenses"), data = data_gbar, stack_type = "100")#100% Stacked bars
+amBarplot(x = "year", y = c("income", "expenses"), data = data_gbar, layered = TRUE)#Layered bars
+
+```
+
+```{r}
+#Data with row names
+dataset <- data.frame(get(x = "USArrests", pos = "package:datasets"))
+amBarplot(y = c("Murder", "Assault", "UrbanPop", "Rape"), data = dataset, stack_type = "regular")
+```
+
+```{r}
+amBarplot(x = "year", y = c("income", "expenses"), data = data_gbar, legend = TRUE)#legend
+amBarplot(x = "year", y = c("income", "expenses"), data = data_gbar, legend = TRUE, legendPosition = "left")#legendPosition
+
+
+amBarplot(x = "country", y = "visits", data = data_bar, labelRotation = -45, export = TRUE)#export
+amBarplot(x = "country", y = "visits", data = data_bar, labelRotation = -45, export = TRUE,
+          exportFormat = "JPG") #exportFormat
+```
+
+```{r}
+amBarplot(x = "country", y = "visits", data = data_bar, labelRotation = -45, main = "My Barchart",
+        mainColor = "#68838B", mainSize = 25, creditsPosition = "top-right")#main and creditsPosition
+```
+
+### **[Boxplot]  **
+```{r}
+dataset <- get(x = "ChickWeight", pos = "package:datasets")
+amBoxplot(weight~Diet, data=dataset)
+```
+
+```{r}
+amBoxplot(weight~Diet, data=dataset, horiz = TRUE)#Horizontal boxplot
+amBoxplot(weight~Diet, data=dataset, xlab = "diet", ylab = "weight")#Naming axis
+amBoxplot(weight~Diet, data=dataset, col = "#CD1076")#Change color
+```
+
+```{r}
+#main and creditsPosition
+amBoxplot(weight~Diet, data=dataset, labelRotation = -45, main = "My Barchart",
+        mainColor = "#68838B", mainSize = 25, creditsPosition = "top-right")
+```
+
+### **[histogram] **
+```{r}
+data_hist <- get(x = "iris", pos = "package:datasets")$Sepal.Length
+head(data_hist)
+```
+
+```{r}
+amHist(x = data_hist)
+amHist(x = data_hist, border = "#CECECE")
+amHist(x = data_hist, xlab = "xlab", ylab = "ylab")
+amHist(x = data_hist, ylim = c(0,.8), freq = FALSE)#Set ylim
+```
+
+```{r}
+amHist(x = data_hist, export = TRUE, exportFormat = "JPG")#exportFormat
+```
+
+```{r}
+#main and creditsPosition
+amHist(x = data_hist, main = "My Histogram",
+        mainColor = "#68838B", mainSize = 25, creditsPosition = "top-right")
+```
+
+### **[Pie] **
+```{r}
+data("data_pie")
+head(data_pie)
+```
+
+```{r}
+amPie(data = data_pie)
+amPie(data = data_pie, depth = 10)#3D pie
+amPie(data = data_pie, inner_radius = 50)#Donut chart
+
+```
+
+```{r}
+amPie(data = data_pie, legend = TRUE)#legend
+amPie(data = data_pie, legend = TRUE, legendPosition = "left")#legendPosition
+```
+
+```{r}
+amPie(data = data_pie, export = TRUE)#export
+amPie(data = data_pie, export = TRUE, exportFormat = "JPG")
+```
+
+```{r}
+#main and creditsPosition
+amPie(data = data_pie, main = "My Pie",
+        mainColor = "#68838B", mainSize = 25, creditsPosition = "bottom-right")
+```
+
+### **[Radar] **
+```{r}
+data <- data.frame(label = c("A", "Z", "E", "R", "T"),
+                   Product1 = c(1, 2, 3, 4, 2), 
+                   Product2 = c(2, 8, 1, 1, 0),
+                   Product3 = c(1,1,2,2,4))
+```
+
+```{r}
+amRadar(data = data)
+amRadar(data = data, col = c("#0000FF", "#00FF00", "#FF0000"))#Change color
+
+
+```
+
+```{r}
+amRadar(data = data, backTransparency = 1)#backTransparency
+amRadar(data = data, backTransparency = c(0, 0.4, 0.6))
+amRadar(data = data, type = "circles")#type
+```
+
+```{r}
+amRadar(data = data,  pch = "bubble", backTransparency = 0, legend = TRUE)#legend
+
+amRadar(data = data,  pch = "bubble", backTransparency = 0, legend = TRUE, 
+        legendPosition = "left")#legendPosition
+
+
+```
+
+```{r}
+amRadar(data = data,  pch = "bubble", backTransparency = 0, export = TRUE)#export
+amRadar(data = data,  pch = "bubble", backTransparency = 0, export = TRUE, exportFormat = "JPG")
+```
+
+```{r}
+#main and creditsPosition
+amRadar(data = data,  pch = "bubble", backTransparency = 0, main = "My Radar",
+        mainColor = "#68838B", mainSize = 25, creditsPosition = "bottom-right")
+```
+
